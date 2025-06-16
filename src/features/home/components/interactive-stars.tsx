@@ -1,4 +1,4 @@
-"use client"
+
 
 import { motion, useMotionValue, useSpring } from "framer-motion"
 import { useEffect, useState, useCallback, useMemo } from "react"

@@ -7,7 +7,8 @@ import { Link as ScrollLink } from "react-scroll"
 import { motion } from "framer-motion"
 import { useState } from "react"
 import Logo from "../assets/Logo.png"
-
+import { AnimatedCursor } from "../features/home/components/animated-cursor"
+import { InteractiveStars } from "../features/home/components/interactive-stars"
 import {
   Linkedin,
   Twitter,
@@ -95,6 +96,8 @@ const EnhancedFooter: React.FC = () => {
 
   return (
     <footer className="relative bg-gradient-to-br from-[#0a0a0a] via-[#1a1a2e] to-[#16213e] text-white overflow-hidden">
+      <InteractiveStars/>
+      <AnimatedCursor/>
       {/* Animated background elements */}
       <div className="absolute inset-0">
         <motion.div

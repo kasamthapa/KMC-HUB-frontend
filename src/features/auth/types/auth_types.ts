@@ -12,6 +12,7 @@ export interface User {
 }
 
 export interface SignupRequest {
+  additionalInfo: string;
   idNumber?: string;
   name: string;
   email: string;

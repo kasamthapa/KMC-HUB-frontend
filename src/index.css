@@ -5,9 +5,12 @@
     box-sizing: border-box;
     font-family:"Roboto", sans-serif ;
 }
+body{
+  margin:0;
+}
 @theme {
   --font-roboto: "Roboto", sans-serif;
 }
 .active {
-  @apply text-green-600;
+  @apply text-pink-600;
 }

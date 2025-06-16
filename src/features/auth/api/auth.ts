@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import type { SignupRequest, LoginRequest, SignupResponse, LoginResponse } from "../types/auth_types";
 
 const api = axios.create({
@@ -12,9 +12,11 @@ export const signup = async (data: SignupRequest): Promise<SignupResponse> => {
   try {
     const response = await api.post("/auth/signup", data);
     return response.data;
-  } catch (error:unknown) {
-    console.error("Signup error:", error.response?.data || error.message);
-    throw error.response?.data || new Error("Signup failed");
+  } catch (error: unknown) {
+    // Assert 'error' as AxiosError to access .response and .message
+    const axiosError = error as AxiosError; 
+    console.error("Signup error:", axiosError.response?.data || axiosError.message);
+    throw axiosError.response?.data || new Error("Signup failed");
   }
 };
 
@@ -22,8 +24,10 @@ export const login = async (data: LoginRequest): Promise<LoginResponse> => {
   try {
     const response = await api.post("/auth/login", data);
     return response.data;
-  } catch (error:unknown) {
-    console.error("Login error:", error.response?.data || error.message);
-    throw error.response?.data || new Error("Login failed");
+  } catch (error: unknown) {
+    // Assert 'error' as AxiosError to access .response and .message
+    const axiosError = error as AxiosError;
+    console.error("Login error:", axiosError.response?.data || axiosError.message);
+    throw axiosError.response?.data || new Error("Login failed");
   }
 };

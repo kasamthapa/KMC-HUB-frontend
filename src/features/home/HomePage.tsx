@@ -251,7 +251,7 @@ const Home: React.FC = () => {
               </div>
             </div>
 
-            {/* Auto-scrolling Text Marquee - Now in Hero - Full Width */}
+            {/* Auto-scrolling Text Marquee - */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}

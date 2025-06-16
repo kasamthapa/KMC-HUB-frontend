@@ -65,7 +65,7 @@ export const InteractiveStars = () => {
         y: Math.random() * height,
         size,
         opacity,
-        speed: Math.random() * 0.4 + 0.1, // Reduced speed for better performance
+        speed: Math.random() * 0.4 + 0.1, 
         glowIntensity,
         twinkleSpeed: Math.random() * 1.5 + 1,
         category,
@@ -146,7 +146,7 @@ export const InteractiveStars = () => {
               : "none",
           }}
           animate={{
-            x: star.x + (mouseXSpring.get() - centerX) * star.speed * 0.08, // Reduced multiplier
+            x: star.x + (mouseXSpring.get() - centerX) * star.speed * 0.08, 
             y: star.y + (mouseYSpring.get() - centerY) * star.speed * 0.08,
             opacity: [star.opacity * 0.8, star.opacity, star.opacity * 0.9],
           }}
@@ -169,7 +169,7 @@ export const InteractiveStars = () => {
     })
   }, [stars, dimensions.width, dimensions.height, mouseXSpring, mouseYSpring])
 
-  // Reduced shooting stars count and simplified animation
+
   const shootingStars = useMemo(() => 
     [...Array(4)].map((_, i) => (
       <motion.div

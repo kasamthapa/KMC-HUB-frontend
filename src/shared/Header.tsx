@@ -44,7 +44,7 @@ export const Header: React.FC = () => {
     { name: "Home", to: "/", icon: Home },
     { name: "Features", to: "features", icon: Zap, isScroll: true },
     { name: "Resources", to: "/resources", icon: BookOpen },
-    { name: "Feed", to: "/collaboration-feed", icon: MessageSquare },
+    { name: "Feed", to: "/feed", icon: MessageSquare },
   ];
 
   const menuVariants = {

@@ -12,14 +12,13 @@ export const authAtom = atom<AuthState>({
 });
 
 export const authAtomWithStorage = atom(
-  (get)=>get(authAtom),
-  (get,set,newAuthState:AuthState)=>{
-    set(authAtom,newAuthState);
-    if(newAuthState.token){
-      localStorage.setItem('token',newAuthState.token);
-    }
-    else{
-      localStorage.removeItem('token');
+  (get) => get(authAtom),
+  (get, set, newAuthState: AuthState) => {
+    set(authAtom, newAuthState);
+    if (newAuthState.token) {
+      localStorage.setItem("token", newAuthState.token);
+    } else {
+      localStorage.removeItem("token");
     }
   }
-)
+);

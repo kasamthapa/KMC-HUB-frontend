@@ -4,11 +4,11 @@
 //   Admin = "Admin",
 // }
 export interface User {
-  id: string;
+  _id: string;
   name: string;
   email: string;
-  role: string;
-  idNumber?: string; //Required for students
+  avatar?: string;
+  role: "Student" | "Teacher" | "Admin";
 }
 
 export interface SignupRequest {
@@ -37,7 +37,7 @@ export interface LoginResponse{
 export interface AuthResponse extends User {
   token: string;
   User: {
-    id: string;
+    _id: string;
     name: string;
     email: string;
     role: string;

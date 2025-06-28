@@ -1,85 +1,89 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
-import { motion, AnimatePresence } from "framer-motion"
-import { useAtom } from "jotai"
-import { login } from "../api/auth"
-import { authAtomWithStorage } from "../../../jotai/auth"
-import type { LoginRequest } from "../types/auth_types"
-import { InteractiveStars } from "../../home/components/interactive-stars"
-import { AnimatedCursor } from "../../home/components/animated-cursor"
-import { AnimatedButton } from "../../../shared/animated-button"
-import { AlertCircle, CheckCircle2, LogIn } from "lucide-react"
-import InputForm from "../../../shared/animated-input"
+import type React from "react";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { useAtom } from "jotai";
+import { login } from "../api/auth";
+import { authAtomWithStorage } from "../../../jotai/auth";
+import type { LoginRequest } from "../types/auth_types";
+import { InteractiveStars } from "../../home/components/interactive-stars";
+import { AnimatedCursor } from "../../home/components/animated-cursor";
+import { AnimatedButton } from "../../../shared/animated-button";
+import { AlertCircle, CheckCircle2, LogIn } from "lucide-react";
+import InputForm from "../../../shared/animated-input";
 
 const LoginForm: React.FC = () => {
   const initialValue: LoginRequest = {
     email: "",
     password: "",
-  }
+  };
 
-  const [formValues, setFormValues] = useState(initialValue)
-  const [errors, setErrors] = useState<{ [key: string]: string }>({})
-  const [apiError, setApiError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [showSuccess, setShowSuccess] = useState(false)
-  const [, setAuth] = useAtom(authAtomWithStorage)
-  const navigate = useNavigate()
+  const [formValues, setFormValues] = useState(initialValue);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [apiError, setApiError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [, setAuth] = useAtom(authAtomWithStorage);
+  const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormValues({ ...formValues, [name]: value })
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormValues({ ...formValues, [name]: value });
     // Clear errors when user starts typing
     if (errors[name]) {
-      setErrors({ ...errors, [name]: "" })
+      setErrors({ ...errors, [name]: "" });
     }
-    if (apiError) setApiError("")
-  }
+    if (apiError) setApiError("");
+  };
 
   const validate = (values: LoginRequest) => {
-    const errors: { [key: string]: string } = {}
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const errors: { [key: string]: string } = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!values.email) errors.email = "Email is required"
-    else if (!emailRegex.test(values.email)) errors.email = "Invalid email format"
-    if (!values.password) errors.password = "Password is required"
+    if (!values.email) errors.email = "Email is required";
+    else if (!emailRegex.test(values.email))
+      errors.email = "Invalid email format";
+    if (!values.password) errors.password = "Password is required";
 
-    return errors
-  }
+    return errors;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setErrors({})
-    setApiError("")
-    setIsLoading(true)
+    e.preventDefault();
+    setErrors({});
+    setApiError("");
+    setIsLoading(true);
 
-    const validationErrors = validate(formValues)
+    const validationErrors = validate(formValues);
     if (Object.keys(validationErrors).length) {
-      setErrors(validationErrors)
-      setIsLoading(false)
-      return
+      setErrors(validationErrors);
+      setIsLoading(false);
+      return;
     }
 
     try {
-      const payload: LoginRequest = { ...formValues }
-      const response = await login(payload)
-      setAuth({ user: null, token: response.token })
-      setShowSuccess(true)
+      const payload: LoginRequest = { ...formValues };
+      const { token, User } = await login(payload);
+      setAuth({ user: User, token, isAuthenticated: true });
+      setShowSuccess(true);
 
       // Delay navigation to show success animation
       setTimeout(() => {
-        navigate("/home")
-      }, 1500)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        navigate("/home");
+      }, 1500);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      const backendError = error?.errors?.[0]?.message || error.message || "Login failed"
-      setApiError(backendError)
+      const backendError =
+        error?.errors?.[0]?.message || error.message || "Login failed";
+      setApiError(backendError);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a1a2e] to-[#16213e] flex items-center justify-center p-4 relative overflow-hidden">
@@ -141,7 +145,9 @@ const LoginForm: React.FC = () => {
             <h2 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
               Welcome Back
             </h2>
-            <p className="text-slate-400 mt-2">Sign in to your KMC Hub account</p>
+            <p className="text-slate-400 mt-2">
+              Sign in to your KMC Hub account
+            </p>
           </motion.div>
 
           {/* Success Message */}
@@ -154,14 +160,20 @@ const LoginForm: React.FC = () => {
                 className="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-xl flex items-center"
               >
                 <CheckCircle2 className="w-5 h-5 text-green-400 mr-3" />
-                <span className="text-green-400">Login successful! Redirecting...</span>
+                <span className="text-green-400">
+                  Login successful! Redirecting...
+                </span>
               </motion.div>
             )}
           </AnimatePresence>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+            >
               <InputForm
                 type="email"
                 label="Email"
@@ -173,7 +185,11 @@ const LoginForm: React.FC = () => {
               />
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+            >
               <InputForm
                 type="password"
                 label="Password"
@@ -201,8 +217,16 @@ const LoginForm: React.FC = () => {
             </AnimatePresence>
 
             {/* Submit Button */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-              <AnimatedButton type="submit" loading={isLoading} className="w-full">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <AnimatedButton
+                type="submit"
+                loading={isLoading}
+                className="w-full"
+              >
                 {isLoading ? "Signing In..." : "Sign In"}
               </AnimatedButton>
             </motion.div>
@@ -228,7 +252,7 @@ const LoginForm: React.FC = () => {
         </motion.div>
       </motion.div>
     </div>
-  )
-}
+  );
+};
 
-export default LoginForm
+export default LoginForm;

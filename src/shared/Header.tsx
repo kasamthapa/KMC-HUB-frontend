@@ -1,5 +1,3 @@
-
-
 import type React from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -36,7 +34,7 @@ export const Header: React.FC = () => {
   }, []);
 
   const logout = () => {
-    setAuth({ user: null, token: null });
+    setAuth({ user: null, token: null, isAuthenticated: false });
     setIsMenuOpen(false);
   };
 

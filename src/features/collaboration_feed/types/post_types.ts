@@ -4,6 +4,7 @@ export interface PostReq {
   media: { url: string; type: string }[];
 }
 export interface Post {
+  updatedAt: any;
   _id: string ; // MongoDB ObjectId
   userId: {
     _id: any; id: string; name: string; avatar?: string 

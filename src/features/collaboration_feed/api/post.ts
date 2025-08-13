@@ -114,3 +114,36 @@ export const getLikeCount = async (postId: string, token: string) => {
     throw e;
   }
 };
+
+// FIXED COMMENT API FUNCTIONS - Changed 'content' to 'text' parameter
+export const addComment = async (postId: string, text: string, token: string) => {
+  const res = await api.post(
+    `/posts/${postId}/comment`,
+    { text }, // FIXED: Changed from content to text
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res.data;
+};
+
+export const getComments = async (postId: string, token?: string) => {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const res = await api.get(`/posts/${postId}/comments`, { headers });
+  return res.data;
+};
+
+export const updateComment = async (postId: string, commentId: string, text: string, token: string) => {
+  const res = await api.put(
+    `/posts/${postId}/comments/${commentId}`,
+    { text }, // FIXED: Changed from content to text
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res.data;
+};
+
+export const deleteComment = async (postId: string, commentId: string, token: string) => {
+  const res = await api.delete(
+    `/posts/${postId}/comments/${commentId}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res.data;
+};

@@ -2,11 +2,12 @@
 
 import type React from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { useState } from "react"
+import { useState, } from "react"
 import { useAtom } from "jotai"
 import { authAtom } from "../../../jotai/auth"
 import { feedAtom } from "../../../jotai/feedAtom"
 import { deletePost, editPost, likePost, unlikePost } from "../api/post"
+import CommentSystem from "./CommentSystem" // Import the new comment system
 import {
   Heart,
   MessageCircle,
@@ -17,9 +18,22 @@ import {
   MoreHorizontal,
   Calendar,
   User,
-  AlertCircle
+  AlertCircle,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react"
 import dProfile from "../../../assets/dProfile.png";
+
+export interface Comment {
+  _id: string;
+  userId: {
+    _id: string;
+    name: string;
+    avatar?: string;
+  };
+  text: string; // Changed from content to text to match your CommentSystem
+  createdAt: string;
+}
 
 export interface Post {
   _id: string;
@@ -51,6 +65,9 @@ export const EnhancedPostCard: React.FC<Post> = ({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
   const [isLiking, setIsLiking] = useState(false)
+  const [commentCount, setCommentCount] = useState(0)
+  const [previewComments, setPreviewComments] = useState<Comment[]>([])
+  const [showAllComments, setShowAllComments] = useState(false)
 
   const userName = userId?.name || "Unknown User"
   const userAvatar = userId?.avatar
@@ -68,6 +85,15 @@ export const EnhancedPostCard: React.FC<Post> = ({
     auth.isAuthenticated &&
     authUserId &&
     likes.some((id) => id.toString() === authUserId)
+
+  // Update comment count when comments change
+  const handleCommentCountChange = (count: number) => {
+    setCommentCount(count)
+  }
+
+  const handleCommentsUpdate = (newComments: Comment[]) => {
+    setPreviewComments(newComments)
+  }
 
   const handleDelete = async () => {
     if (!auth.token || !auth.user?._id) {
@@ -149,6 +175,51 @@ export const EnhancedPostCard: React.FC<Post> = ({
     if (diffInHours < 24) return `${diffInHours}h ago`
     if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`
     return date.toLocaleDateString()
+  }
+
+  // Show first 2 comments as preview
+  const visiblePreviewComments = previewComments.slice(0, 2)
+  const hasMoreComments = previewComments.length > 2
+
+  const CommentPreviewItem: React.FC<{ comment: Comment }> = ({ comment }) => {
+    const commentUserAvatar = comment.userId?.avatar
+      ? `${import.meta.env.VITE_STATIC_URL}${comment.userId.avatar}`
+      : dProfile;
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        className="flex space-x-3 py-2"
+      >
+        <div className="relative w-8 h-8 rounded-full overflow-hidden bg-gradient-to-r from-kmcBlue to-green-600 p-0.5 flex-shrink-0">
+          <div className="w-full h-full rounded-full overflow-hidden bg-white dark:bg-gray-800">
+            <img
+              src={commentUserAvatar}
+              alt={`Avatar of ${comment.userId?.name || 'Unknown User'}`}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src = dProfile
+              }}
+            />
+          </div>
+        </div>
+        <div className="flex-1">
+          <div className="bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2">
+            <p className="font-semibold text-sm text-kmcBlue dark:text-white">
+              {comment.userId?.name || 'Unknown User'}
+            </p>
+            <p className="text-gray-800 dark:text-gray-200 text-sm leading-relaxed">
+              {comment.text}
+            </p>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-3">
+            {formatDate(comment.createdAt)}
+          </p>
+        </div>
+      </motion.div>
+    )
   }
 
   return (
@@ -329,13 +400,72 @@ export const EnhancedPostCard: React.FC<Post> = ({
           )}
           <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400">
             <MessageCircle className="w-5 h-5" />
-            <span className="font-medium">Comments</span>
+            <span className="font-medium">{commentCount} Comments</span>
           </div>
         </div>
         <div className="text-gray-500 dark:text-gray-400 text-sm">
           {likes.length} {likes.length === 1 ? "like" : "likes"}
         </div>
       </div>
+
+      {/* Comment Preview Section */}
+      {visiblePreviewComments.length > 0 && !showAllComments && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700"
+        >
+          <div className="space-y-2">
+            <AnimatePresence>
+              {visiblePreviewComments.map((comment) => (
+                <CommentPreviewItem key={comment._id} comment={comment} />
+              ))}
+            </AnimatePresence>
+          </div>
+          
+          {(hasMoreComments || commentCount > visiblePreviewComments.length) && (
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setShowAllComments(true)}
+              className="flex items-center justify-center w-full mt-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-kmcBlue dark:hover:text-white transition-colors duration-200"
+            >
+              <ChevronDown className="w-4 h-4 mr-1" />
+              View all {commentCount} comments
+            </motion.button>
+          )}
+        </motion.div>
+      )}
+
+      {/* Full Comment System */}
+      {showAllComments ? (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="relative"
+        >
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowAllComments(false)}
+            className="flex items-center justify-center w-full mt-2 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-kmcBlue dark:hover:text-white transition-colors duration-200 border-t border-gray-200 dark:border-gray-700"
+          >
+            <ChevronUp className="w-4 h-4 mr-1" />
+            Show less
+          </motion.button>
+          <CommentSystem 
+            postId={_id} 
+            onCommentCountChange={handleCommentCountChange}
+            onCommentsUpdate={handleCommentsUpdate}
+          />
+        </motion.div>
+      ) : (
+        <CommentSystem 
+          postId={_id} 
+          onCommentCountChange={handleCommentCountChange}
+          onCommentsUpdate={handleCommentsUpdate}
+        />
+      )}
 
       {/* Delete Confirmation */}
       <AnimatePresence>

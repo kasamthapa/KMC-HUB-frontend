@@ -73,7 +73,7 @@ const LoginForm: React.FC = () => {
 
       // Delay navigation to show success animation
       setTimeout(() => {
-        navigate("/home");
+        navigate("/feed");
       }, 1500);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

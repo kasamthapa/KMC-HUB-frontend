@@ -1,49 +1,41 @@
-import type React from "react";
-import { Link, NavLink } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { Link as ScrollLink } from "react-scroll";
-import { authAtom, authAtomWithStorage } from "../jotai/auth";
-import { useAtomValue, useAtom } from "jotai";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Menu,
-  X,
-  Home,
-  Zap,
-  BookOpen,
-  MessageSquare,
-  LogOut,
-  LogIn,
-  UserPlus,
-  Sparkles,
-} from "lucide-react";
-import Logo from "../assets/Logo.png";
+"use client"
+
+import type React from "react"
+import { Link, NavLink } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { Link as ScrollLink } from "react-scroll"
+import { authAtom, authAtomWithStorage } from "../jotai/auth"
+import { useAtomValue, useAtom } from "jotai"
+import { motion, AnimatePresence } from "framer-motion"
+import { Menu, X, Home, Zap, BookOpen, MessageSquare, LogOut, LogIn, UserPlus, Sparkles } from "lucide-react"
+import Logo from "../assets/Logo.png"
+import { UserAvatar } from "../features/auth/components/UserAvatar"
 
 export const Header: React.FC = () => {
-  const auth = useAtomValue(authAtom);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [, setAuth] = useAtom(authAtomWithStorage);
+  const auth = useAtomValue(authAtom)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [, setAuth] = useAtom(authAtomWithStorage)
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+      setScrolled(window.scrollY > 50)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   const logout = () => {
-    setAuth({ user: null, token: null, isAuthenticated: false });
-    setIsMenuOpen(false);
-  };
+    setAuth({ user: null, token: null, isAuthenticated: false })
+    setIsMenuOpen(false)
+  }
 
   const navItems = [
     { name: "Home", to: "/", icon: Home },
     { name: "Features", to: "features", icon: Zap, isScroll: true },
     { name: "Resources", to: "/resources", icon: BookOpen },
     { name: "Feed", to: "/feed", icon: MessageSquare },
-  ];
+  ]
 
   const menuVariants = {
     closed: {
@@ -62,12 +54,12 @@ export const Header: React.FC = () => {
         damping: 40,
       },
     },
-  };
+  }
 
   const itemVariants = {
     closed: { x: 50, opacity: 0 },
     open: { x: 0, opacity: 1 },
-  };
+  }
 
   return (
     <motion.header
@@ -83,11 +75,7 @@ export const Header: React.FC = () => {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center"
-          >
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex items-center">
             <Link to="/" className="flex items-center space-x-3">
               <div className="relative">
                 <motion.img
@@ -151,21 +139,33 @@ export const Header: React.FC = () => {
           {/* Desktop Auth Buttons */}
           <div className="hidden lg:flex items-center space-x-4">
             {auth.token ? (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={logout}
-                className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-lg font-medium hover:from-red-600 hover:to-pink-700 transition-all duration-300 shadow-lg shadow-red-500/25"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Logout</span>
-              </motion.button>
-            ) : (
               <div className="flex items-center space-x-4">
-                <motion.div
+                <div className="flex items-center space-x-3">
+                  <UserAvatar
+                    src={auth.user?.avatar}
+                    name={auth.user?.name || "User"}
+                    size="sm"
+                    showOnlineStatus={true}
+                    isOnline={true}
+                  />
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-white">{auth.user?.name}</p>
+                    <p className="text-xs text-slate-400">{auth.user?.role}</p>
+                  </div>
+                </div>
+                <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  onClick={logout}
+                  className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-lg font-medium hover:from-red-600 hover:to-pink-700 transition-all duration-300 shadow-lg shadow-red-500/25"
                 >
+                  <LogOut className="w-4 h-4" />
+                  <span>Logout</span>
+                </motion.button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Link
                     to="/login"
                     className="flex items-center space-x-2 px-4 py-2 text-slate-300 hover:text-white transition-colors duration-300"
@@ -200,11 +200,7 @@ export const Header: React.FC = () => {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="lg:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300"
           >
-            {isMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </motion.button>
         </div>
       </nav>
@@ -246,9 +242,7 @@ export const Header: React.FC = () => {
                       />
                       <Sparkles className="absolute inset-0 w-8 h-8 text-white p-1.5" />
                     </div>
-                    <span className="text-lg font-bold text-white">
-                      KMC Hub
-                    </span>
+                    <span className="text-lg font-bold text-white">KMC Hub</span>
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -259,6 +253,24 @@ export const Header: React.FC = () => {
                     <X className="w-5 h-5" />
                   </motion.button>
                 </div>
+
+                {auth.token && (
+                  <div className="p-6 border-b border-slate-800/50">
+                    <div className="flex items-center space-x-3">
+                      <UserAvatar
+                        src={auth.user?.avatar}
+                        name={auth.user?.name || "User"}
+                        size="md"
+                        showOnlineStatus={true}
+                        isOnline={true}
+                      />
+                      <div>
+                        <p className="font-medium text-white">{auth.user?.name}</p>
+                        <p className="text-sm text-slate-400">{auth.user?.role}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Navigation */}
                 <div className="flex-1 px-6 py-8">
@@ -318,10 +330,7 @@ export const Header: React.FC = () => {
                     </motion.button>
                   ) : (
                     <div className="space-y-3">
-                      <motion.div
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                         <Link
                           to="/login"
                           onClick={() => setIsMenuOpen(false)}
@@ -331,10 +340,7 @@ export const Header: React.FC = () => {
                           <span>Login</span>
                         </Link>
                       </motion.div>
-                      <motion.div
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                         <Link
                           to="/signup"
                           onClick={() => setIsMenuOpen(false)}
@@ -353,5 +359,5 @@ export const Header: React.FC = () => {
         )}
       </AnimatePresence>
     </motion.header>
-  );
-};
+  )
+}

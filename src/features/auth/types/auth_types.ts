@@ -1,45 +1,52 @@
-// enum string {
-//   Student = "Student",
-//   Teacher = "Teacher",
-//   Admin = "Admin",
-// }
-export interface User {
-  _id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  role: "Student" | "Teacher" | "Admin";
-}
-
 export interface SignupRequest {
-  additionalInfo: string;
   idNumber?: string;
   name: string;
   email: string;
   password: string;
   role: string;
+  avatar?: File;
 }
 
 export interface LoginRequest {
   email: string;
   password: string;
 }
-export interface SignupResponse{
-  message:string,
-  User:User
-}
-export interface LoginResponse{
-  message:string,
-  token:string,
-  User:User
-}
 
-export interface AuthResponse extends User {
+export interface AuthResponse {
+  message: string;
   token: string;
   User: {
-    _id: string;
+    id: string;
     name: string;
     email: string;
     role: string;
+    avatar?: string;
+    idNumber?: string;
   };
+}
+
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: "Student" | "Teacher" | "Admin";
+  avatar?: string;
+  idNumber?: string;
+}
+
+export interface AuthState {
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
+}
+
+export interface SignupResponse {
+  message: string;
+  User: User;
+}
+
+export interface LoginResponse {
+  message: string;
+  token: string;
+  User: User;
 }

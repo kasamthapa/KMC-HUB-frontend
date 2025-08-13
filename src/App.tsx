@@ -1,12 +1,18 @@
-import { Provider } from "jotai";
+import { Provider, useSetAtom } from "jotai";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignupForm from "./features/auth/components/SignUpForm";
 import HomePage from "./features/home/HomePage";
 import LoginForm from "./features/auth/components/LoginForm";
 import CollaborationFeed from "./features/collaboration_feed/pages/CollaborationFeed";
+import { useEffect } from "react";
+import { authAtomWithStorage, rehydrateAuth } from "./jotai/auth";
 
 
-function App() {
+function App() {const setAuth = useSetAtom(authAtomWithStorage);
+
+  useEffect(() => {
+    rehydrateAuth(setAuth);
+  }, [setAuth]);
   return (
     <>
       <Provider>
